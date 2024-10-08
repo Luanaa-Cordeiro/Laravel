@@ -28,7 +28,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('user_create');
     }
 
     /**
@@ -36,23 +36,34 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $created = $this->user->create([
+           'nome' => $request->input('nome'),
+            'email' => $request->input('email'),
+            'senha' => $request->input('senha'),
+        ]);
+
+        if($created){
+            return redirect()->back()->with('message','Criado com sucesso');
+        }
+
+        return redirect()->back()->with('message','Erro ao criar');
+    
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        return view('user_show',['user' => $user]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        //
+        return view('user_edit', ['user' => $user]);
     }
 
     /**
@@ -60,7 +71,13 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $updated = $this->user->where('id', $id)->update($request->except(['_token','_method']));
+
+        if($updated){
+            return redirect()->back()->with('message','Atualizado com sucesso');
+        }
+
+        return redirect()->back()->with('message','Erro ao atualizar');
     }
 
     /**
@@ -68,6 +85,8 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+       $this->user->where('id',$id)->delete();
+
+       return redirect()->route('users.index');
     }
 }
